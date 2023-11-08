@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
-
-const instance = axios.create({
-  baseURL: 'http://localhost:3000',
-  timeout: 1000,
-  headers: {'X-Custom-Header': 'foobar'}
-});
+import axios from "../../axios/axios_instance";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -26,6 +20,7 @@ const SignUp = () => {
   const handleSignUp = (e) => {
     e.preventDefault();
     if(formdata.username.trim().length < 6){
+      console.log(formdata.username.trim());
       setFormdata({...formdata, usernameError: true})
     }
     const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
@@ -37,7 +32,7 @@ const SignUp = () => {
     }
     if(formdata.usernameError || formdata.emailError || formdata.passwordError || formdata.confirmPasswordError) return
 
-    instance.post('/signup', {
+    axios.post('/signup', {
       username: formdata.username,
       email: formdata.email,
       password: formdata.password,

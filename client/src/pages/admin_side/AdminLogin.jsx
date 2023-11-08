@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginSuccess, loginFailed } from "../../redux/slices/userSlice";
+import { loginSuccess, loginFailed } from "../../redux/slices/adminSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../axios/axios_instance";
 import useAuth from "../../hooks/auth";
 import FailerToast from "../../components/FailerToast";
 
-const Login = () => {
+const AdminLogin = () => {
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error } = useSelector((state) => state.user);
+  const { error } = useSelector((state) => state.admin);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (email.trim().length === 0 || password.trim().length === 0) return;
+    if (email.trim().length === 0 || password.trim().length === 0) return dispatch(loginFailed());
 
     axios
-      .post("/login", { email, password })
+      .post("/admin/login", { email, password })
       .then((response) => {
         console.log(response.data);
         if(response.data.success){
-          dispatch(loginSuccess(response.data.user));
-          navigate("/");
+          dispatch(loginSuccess(response.data.admin));
+          navigate("/admin/");
         } else {
           dispatch(loginFailed());
 
@@ -42,7 +42,7 @@ const Login = () => {
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className=" p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-center first-letter: text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                User Login
+                Admin Login
               </h1>
               <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
                 <div>
@@ -97,14 +97,6 @@ const Login = () => {
                 >
                   Login
                 </button>
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Don't you have a account?{" "}
-                  <Link to="/signup">
-                    <span className="font-medium text-primary-600 hover:underline dark:text-primary-500">
-                      Sign Up here
-                    </span>
-                  </Link>
-                </p>
               </form>
             </div>
           </div>
@@ -114,4 +106,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;
