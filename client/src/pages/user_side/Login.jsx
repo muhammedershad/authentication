@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginSuccess, loginFailed } from "../../redux/slices/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../axios/axios_instance";
-import useAuth from "../../hooks/auth";
-import FailerToast from "../../components/FailerToast";
 
 const Login = () => {
   
@@ -20,11 +18,11 @@ const Login = () => {
     if (email.trim().length === 0 || password.trim().length === 0) return;
 
     axios
-      .post("/login", { email, password })
+      .post("/login", { email, password, })
       .then((response) => {
         console.log(response.data);
         if(response.data.success){
-          dispatch(loginSuccess(response.data.user));
+          dispatch(loginSuccess(response.data));
           navigate("/");
         } else {
           dispatch(loginFailed());

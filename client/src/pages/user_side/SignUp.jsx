@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../../axios/axios_instance";
 
-const SignUp = () => {
+const SignUp = ({to}) => {
   const navigate = useNavigate();
 
   const initialState = {
@@ -18,19 +18,19 @@ const SignUp = () => {
   const [formdata, setFormdata] = useState(initialState);
   
   const handleSignUp = (e) => {
-    e.preventDefault();
-    if(formdata.username.trim().length < 6){
-      console.log(formdata.username.trim());
-      setFormdata({...formdata, usernameError: true})
+    e.preventDefault()
+    if (formdata.username.trim().length < 6) {
+      setFormdata({ ...formdata, usernameError: true });
+      return
     }
     const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-    if(!(emailRegex.test(formdata.email))){
-      setFormdata({...formdata, emailError: true})
+    if (!emailRegex.test(formdata.email)) {
+      setFormdata({ ...formdata, emailError: true });
+      return
     }
-    if(formdata.password.trim().length < 6){
-      setFormdata({...formdata, passwordError: true})
+    if (formdata.password.trim().length < 6) {
+      return setFormdata({ ...formdata, passwordError: true });
     }
-    if(formdata.usernameError || formdata.emailError || formdata.passwordError || formdata.confirmPasswordError) return
 
     axios.post('/signup', {
       username: formdata.username,
@@ -40,7 +40,7 @@ const SignUp = () => {
     })
     .then(function (response) {
       console.log(response);
-      navigate('/login');
+      navigate(to);
     })
     .catch(function (error) {
       console.log(error);

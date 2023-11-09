@@ -24,13 +24,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={ <AdminPrivateRoutes />}>
+            <Route path="/admin/signup" element= { <SignUp to='/admin/' />} />
             <Route path='/admin/' element={<Dashboard />} />
           </Route>
           <Route element={ <AdminLogginedRoutes/>}>
             <Route path='/admin/login' element={<AdminLogin />} />
           </Route>
           <Route element={<Loggined />}>
-            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signup" element={<SignUp to='/login' />} />
             <Route path="/login" element={<Login />} />
           </Route>
           <Route element={<PrivateRoute />}>

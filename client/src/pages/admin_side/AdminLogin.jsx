@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { loginSuccess, loginFailed } from "../../redux/slices/adminSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../axios/axios_instance";
-import useAuth from "../../hooks/auth";
-import FailerToast from "../../components/FailerToast";
 
 const AdminLogin = () => {
   
@@ -24,7 +22,7 @@ const AdminLogin = () => {
       .then((response) => {
         console.log(response.data);
         if(response.data.success){
-          dispatch(loginSuccess(response.data.admin));
+          dispatch(loginSuccess(response.data));
           navigate("/admin/");
         } else {
           dispatch(loginFailed());

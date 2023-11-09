@@ -40,7 +40,6 @@ async function signup(req, res) {
 }
 
 async function login(req, res) {
-    console.log(req.body);
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
@@ -55,7 +54,7 @@ async function login(req, res) {
     const token = jwt.sign({
       data: user._id
     }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    return res.cookie('token', token, { httpOnly: true}).status(200).json({ success: true, user });
+    return res.cookie('token', token, { httpOnly: true}).status(200).json({ success: true, user, token });
 }
 
 const update = async (req, res) => {
@@ -71,14 +70,85 @@ const update = async (req, res) => {
         email: req.body.email,
         password: req.body.password
       }, { new: true });
-      return res.status(200).json({ success: true, user: updatedUser });
+      
+      return res.status(200).json({ success: true, user: updatedUser, token });
     } catch (error) {
       return res.status(500).json({ message: error.message, success: false });
     }
 }
 
-const deleteUser = async (req, res) => {
+const updateUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+    if (!user) {
+      return res.status(404).json({ message: 'User not found', success: false });
+    } else {
+      if(req.body.username) {
+        if(req.body.username.trim().length > 0){
+          user.username = req.body.username
+        } else {
+          return res.status(400).json({ message: 'Username cannot be empty', success: false });
+        }
+      } else if (req.body.email){
+        if(req.body.email.trim().length > 0){
+          const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+          if (!emailRegex.test(req.body.email)){
+            return res.status(400).json({ message: 'Invalid email', success: false });
+          } else {
+            user.email = req.body.email
+          }
+        } else {
+          return res.status(400).json({ message: 'Email cannot be empty', success: false });
+        }
+      } if (req.body.password){
+        if(req.body.password.trim().length < 6) {
+          return res.status(400).json({ message: 'Password must be at least 6 characters long', success: false });
+        } else {
+          const hashPass = bcrypt.hashSync(req.body.password,10)
+          user.password = hashPass
+        }
+      }
 
+      await user.save();
+      user.password = undefined
+      return res.status(200).json({ message: 'User updated successfully', success: true, user, token: req.body.token });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const updateImage = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+    if (!user) {
+      return res.status(404).json({ message: 'User not found', success: false });
+    } else {
+      user.profilePicture = req.body.imageurl
+      await user.save();
+      user.password = undefined;
+      return res.status(200).json({ message: 'Image saved successfully', success: true, user, token: req.body.token });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+
+    if(!user) 
+        return res.status(404).json({ success:false});
+    else {
+        await User.findByIdAndDelete(req.params.id)
+        const users = await User.find()
+        return res.status(200).json({ success: true, message: "User deleted!", users});
+    }
+
+} catch (error) {
+    console.log(error);
+}
 }
 
 const logout = async (req, res) => {
@@ -91,7 +161,9 @@ const userController = {
   login,
   update,
   logout,
-  deleteUser
+  deleteUser,
+  updateUser,
+  updateImage
 };
 
 export default userController;

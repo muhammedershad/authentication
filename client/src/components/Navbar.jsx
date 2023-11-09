@@ -1,7 +1,18 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from '../axios/axios_instance'
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/slices/userSlice";
 
 const Navbar = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  
+  const handleLogout = async () => {
+    await axios.request('/logout')
+    dispatch(logout())
+    navigate('/login')
+  }
   return (
     <>
       <nav className="bg-white dark:bg-gray-900 fixed w-full top-0 left-0 border-b border-gray-200 dark:border-gray-600">
@@ -17,14 +28,13 @@ const Navbar = () => {
             </span>
           </a>
           <div className="flex md:order-2">
-            <Link to="/signup">
             <button
+              onClick={handleLogout}
               type="button"
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              SignUp
+              Logout
             </button>
-            </Link>
             <button
               data-collapse-toggle="navbar-sticky"
               type="button"
